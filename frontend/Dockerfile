@@ -12,4 +12,5 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Use full path to ensure next is found
+CMD ["/app/node_modules/.bin/next", "start"]
