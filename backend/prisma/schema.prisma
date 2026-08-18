@@ -257,13 +257,7 @@ model MealPlan {
   id        String   @id @default(cuid())
   userId    String   @unique
 
-  monday    MealDay?
-  tuesday   MealDay?
-  wednesday MealDay?
-  thursday  MealDay?
-  friday    MealDay?
-  saturday  MealDay?
-  sunday    MealDay?
+  meals     MealDay[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -274,6 +268,7 @@ model MealDay {
   mealPlanId String
   mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
 
+  dayOfWeek  Int      @default(1) // 1-7 for Monday-Sunday
   breakfast  String?
   lunch      String?
   dinner     String?
@@ -281,4 +276,7 @@ model MealDay {
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@unique([mealPlanId, dayOfWeek])
+  @@index([mealPlanId])
 }
