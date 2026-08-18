@@ -4,15 +4,15 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm ci --legacy-peer-deps
+RUN npm ci --legacy-peer-deps && npm list next && ls -la node_modules/.bin/next
 
 COPY . .
 
 RUN npm run build
 
-# Ensure node_modules is ready at runtime
-RUN npm rebuild
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
