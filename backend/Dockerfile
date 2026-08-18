@@ -1,9 +1,6 @@
-FROM node:18-alpine
+FROM node:18-slim
 
 WORKDIR /app
-
-# Install OpenSSL for Prisma compatibility
-RUN apk add --no-cache openssl
 
 COPY package*.json ./
 
