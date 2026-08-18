@@ -4,13 +4,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm install --legacy-peer-deps && \
-    echo "=== npm list next ===" && \
-    npm list next && \
-    echo "=== ls node_modules/.bin/next ===" && \
-    ls -la node_modules/.bin/next && \
-    echo "=== npm ls installed packages ===" && \
-    npm ls --depth=0
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
@@ -18,4 +12,5 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Use full path to ensure next is found
+CMD ["/app/node_modules/.bin/next", "start"]
