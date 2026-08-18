@@ -1,8 +1,6 @@
-FROM node:18-slim
+FROM node:20-slim
 
 WORKDIR /app
-
-RUN apt-get update && apt-get install -y libssl1.1 && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 
