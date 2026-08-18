@@ -12,5 +12,5 @@ RUN npm run build
 
 EXPOSE 3000
 
-# Ensure node_modules and .next are valid before starting
-CMD ["sh", "-c", "if [ ! -d 'node_modules' ]; then echo 'Installing dependencies...'; npm ci --legacy-peer-deps && npm run build; fi && npm start"]
+# Ensure .next build exists before starting
+CMD ["sh", "-c", "if [ ! -d '.next' ]; then echo 'Building application...'; npm run build; fi && npm start"]
