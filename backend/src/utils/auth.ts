@@ -1,27 +1,30 @@
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 const secret = (process.env.JWT_SECRET || 'secret') as string;
 
 export const generateAccessToken = (userId: string): string => {
-  const options: SignOptions = {
-    expiresIn: process.env.JWT_EXPIRY || '15m',
-  };
-  return jwt.sign({ userId }, secret, options);
+  return jwt.sign(
+    { userId },
+    secret,
+    { expiresIn: process.env.JWT_EXPIRY || '15m' } as any
+  );
 };
 
 export const generateRefreshToken = (userId: string): string => {
-  const options: SignOptions = {
-    expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d',
-  };
-  return jwt.sign({ userId }, secret, options);
+  return jwt.sign(
+    { userId },
+    secret,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '7d' } as any
+  );
 };
 
 export const generateSessionPin = (profileId: string, userId: string): string => {
-  const options: SignOptions = {
-    expiresIn: '24h',
-  };
-  return jwt.sign({ profileId, userId }, secret, options);
+  return jwt.sign(
+    { profileId, userId },
+    secret,
+    { expiresIn: '24h' } as any
+  );
 };
 
 export const hashPassword = async (password: string): Promise<string> => {
