@@ -1,10 +1,10 @@
-FROM node:18-alpine
+FROM node:18-slim
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 
-RUN npm install --legacy-peer-deps --prefer-offline --no-audit
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
@@ -12,4 +12,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node_modules/.bin/next", "start"]
+CMD ["npm", "start"]
