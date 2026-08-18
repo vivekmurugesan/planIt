@@ -1,0 +1,284 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  accountType AccountType @default(SINGLE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profiles  Profile[]
+  todos     Todo[]
+  events    Event[]
+  chores    Chore[]
+  exams     ExamRevision[]
+  olympiads OlympiadRevision[]
+  homework  Homework[]
+}
+
+enum AccountType {
+  SINGLE
+  FAMILY
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name         String
+  displayName  String
+  avatar       String?
+  colorCode    String   @default("#4CAF50")
+  relationship ProfileType
+  age          Int?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  todos        Todo[]
+  events       Event[]
+  chores       Chore[]
+  exams        ExamRevision[]
+  olympiads    OlympiadRevision[]
+  homework     Homework[]
+  revisions    RevisionItem[]
+
+  @@unique([userId, displayName])
+}
+
+enum ProfileType {
+  PARENT
+  CHILD
+  OWNER
+}
+
+model Todo {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  title     String
+  description String?
+  status    TodoStatus @default(NOT_STARTED)
+  priority  Priority   @default(MEDIUM)
+  dueDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+enum TodoStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  title     String
+  description String?
+  location  String?
+  eventType EventType
+  startDate DateTime
+  endDate   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+enum EventType {
+  GO_OUT
+  SCHOOL_EVENT
+  SOCIAL_VISIT
+  APPOINTMENT
+  OTHER
+}
+
+model Chore {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  title     String
+  description String?
+  recurring Boolean  @default(false)
+  frequency ChoreFrequency?
+  status    ChoreStatus @default(NOT_STARTED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+enum ChoreFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  ONE_OFF
+}
+
+enum ChoreStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model ExamRevision {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  subject   String
+  topic     String
+  testDate  DateTime
+  status    RevisionStatus @default(NOT_STARTED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+model OlympiadRevision {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  subject   String
+  topic     String
+  prepDate  DateTime
+  status    RevisionStatus @default(NOT_STARTED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+enum RevisionStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model Homework {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  subject   String
+  title     String
+  description String?
+  dueDate   DateTime
+  status    HomeworkStatus @default(NOT_STARTED)
+  priority  Priority @default(MEDIUM)
+  attachments String? // JSON array of file paths
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+enum HomeworkStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+model RevisionItem {
+  id        String   @id @default(cuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  subject   String
+  date      DateTime
+  topic     String
+  status    RevisionStatus @default(NOT_STARTED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+}
+
+model MealPlan {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+
+  monday    MealDay?
+  tuesday   MealDay?
+  wednesday MealDay?
+  thursday  MealDay?
+  friday    MealDay?
+  saturday  MealDay?
+  sunday    MealDay?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MealDay {
+  id         String   @id @default(cuid())
+  mealPlanId String
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+
+  breakfast  String?
+  lunch      String?
+  dinner     String?
+  snacks     String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
