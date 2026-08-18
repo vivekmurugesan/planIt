@@ -1,31 +1,44 @@
 'use client';
 
-import { useState } from 'react';
-import { useAuthStore } from '@/lib/store';
+import { useState, useEffect } from 'react';
+import { useAuthStore, type Profile } from '@/lib/store';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import TabNavigation from '@/components/dashboard/TabNavigation';
 import ChildTodoPanel from '@/components/dashboard/child/ChildTodoPanel';
 import ChildHomeworkPanel from '@/components/dashboard/child/ChildHomeworkPanel';
 import ChildExamPlannerPanel from '@/components/dashboard/child/ChildExamPlannerPanel';
 import ChildOlympiadPanelPanel from '@/components/dashboard/child/ChildOlympiadPanel';
 import ChildRevisionPanel from '@/components/dashboard/child/ChildRevisionPanel';
-import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { authAPI } from '@/lib/api';
+import { profilesAPI } from '@/lib/api';
 
 type ChildTabType = 'todo' | 'homework' | 'exams' | 'olympiad' | 'revision';
 
 export default function ChildDashboard({ params }: { params: { profileId: string } }) {
   const router = useRouter();
-  const { currentProfile, logout } = useAuthStore();
+  const { setCurrentProfile } = useAuthStore();
   const [activeTab, setActiveTab] = useState<ChildTabType>('todo');
+  const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
 
-  const handleLogout = async () => {
+  useEffect(() => {
+    fetchProfiles();
+  }, []);
+
+  const fetchProfiles = async () => {
     try {
-      await authAPI.logout();
-      logout();
-      router.push('/');
+      const response = await profilesAPI.getAll();
+      setAllProfiles(response.data.profiles);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error('Failed to fetch profiles:', error);
+    }
+  };
+
+  const handleProfileSwitch = (profile: Profile) => {
+    setCurrentProfile(profile);
+    if (profile.relationship === 'PARENT' || profile.relationship === 'OWNER') {
+      router.push(`/dashboard/parent/${profile.id}`);
+    } else {
+      router.push(`/dashboard/child/${profile.id}`);
     }
   };
 
@@ -39,26 +52,7 @@ export default function ChildDashboard({ params }: { params: { profileId: string
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-md">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white"
-              style={{ backgroundColor: currentProfile?.colorCode }}>
-              {currentProfile?.avatar || '👤'}
-            </div>
-            <h1 className="text-xl font-bold text-gray-800">
-              {currentProfile?.displayName}
-            </h1>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
-        </div>
-      </nav>
+      <DashboardHeader allProfiles={allProfiles} onProfileSwitch={handleProfileSwitch} />
 
       <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
