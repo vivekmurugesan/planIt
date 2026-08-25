@@ -86,7 +86,7 @@ export default function DashboardHeader({ allProfiles, onProfileSwitch }: Dashbo
                       onClick={() => handleProfileSelect(profile)}
                       className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 transition-colors ${
                         currentProfile?.id === profile.id
-                          ? 'bg-green-100 text-green-900'
+                          ? 'bg-purple-100 text-purple-900'
                           : 'hover:bg-gray-100 text-gray-800'
                       }`}
                     >
@@ -98,7 +98,7 @@ export default function DashboardHeader({ allProfiles, onProfileSwitch }: Dashbo
                       </div>
                       <span className="flex-1">{profile.displayName}</span>
                       {currentProfile?.id === profile.id && (
-                        <span className="text-green-600">✓</span>
+                        <span className="text-purple-600">✓</span>
                       )}
                     </button>
                   ))}

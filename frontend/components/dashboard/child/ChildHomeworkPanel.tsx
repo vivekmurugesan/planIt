@@ -14,7 +14,7 @@ interface Homework {
   priority: string;
 }
 
-const SUBJECTS = ['English', 'Math', 'Physics', 'Chemistry', 'History', 'Geography'];
+const SUBJECTS = ['English', 'Maths', 'Physics', 'Chemistry', 'Biology', 'Geography', 'Language'];
 
 export default function ChildHomeworkPanel({ profileId }: { profileId: string }) {
   const [homework, setHomework] = useState<Homework[]>([]);
@@ -100,7 +100,7 @@ export default function ChildHomeworkPanel({ profileId }: { profileId: string })
           {filteredHomework.map((hw) => (
             <div
               key={hw.id}
-              className={`card flex items-start gap-3 ${hw.status === 'COMPLETED' ? 'bg-green-50' : ''}`}
+              className={`card flex items-start gap-3 ${hw.status === 'COMPLETED' ? 'bg-purple-50' : ''}`}
             >
               <button
                 onClick={() => handleToggleStatus(hw)}

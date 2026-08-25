@@ -79,7 +79,7 @@ export default function ChildTodoPanel({ profileId }: { profileId: string }) {
             <div
               key={todo.id}
               className={`card flex items-start gap-3 cursor-pointer hover:shadow-lg transition-all ${
-                todo.status === 'COMPLETED' ? 'bg-green-50' : ''
+                todo.status === 'COMPLETED' ? 'bg-purple-50' : ''
               }`}
               onClick={() => handleToggleStatus(todo)}
             >
