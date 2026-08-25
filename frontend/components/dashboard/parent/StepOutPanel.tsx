@@ -13,12 +13,11 @@ interface Todo {
   dueDate?: string;
 }
 
-interface TodoPanelProps {
+interface StepOutPanelProps {
   profileId: string;
-  title?: string;
 }
 
-export default function TodoPanel({ profileId, title = 'StepOut - Todo List' }: TodoPanelProps) {
+export default function StepOutPanel({ profileId }: StepOutPanelProps) {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [newTodo, setNewTodo] = useState({ title: '', description: '', priority: 'MEDIUM' });
@@ -80,19 +79,19 @@ export default function TodoPanel({ profileId, title = 'StepOut - Todo List' }: 
   };
 
   if (loading) {
-    return <div className="text-center py-8 text-gray-600">Loading todos...</div>;
+    return <div className="text-center py-8 text-gray-600">Loading step-out items...</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
+        <h2 className="text-2xl font-bold text-gray-800">StepOut - Step Out Items</h2>
         <button
           onClick={() => setShowForm(!showForm)}
           className="flex items-center gap-2 btn-primary"
         >
           <Plus className="w-4 h-4" />
-          Add Todo
+          Add Step Out
         </button>
       </div>
 
@@ -101,7 +100,7 @@ export default function TodoPanel({ profileId, title = 'StepOut - Todo List' }: 
           <form onSubmit={handleAddTodo} className="space-y-3">
             <input
               type="text"
-              placeholder="What needs to be done?"
+              placeholder="Step out activity or task"
               value={newTodo.title}
               onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
               className="input"
@@ -125,7 +124,7 @@ export default function TodoPanel({ profileId, title = 'StepOut - Todo List' }: 
             </select>
             <div className="flex gap-2">
               <button type="submit" className="flex-1 btn-primary">
-                Add Todo
+                Add Step Out
               </button>
               <button
                 type="button"
@@ -141,7 +140,7 @@ export default function TodoPanel({ profileId, title = 'StepOut - Todo List' }: 
 
       {todos.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          No todos yet. Create one to get started!
+          No step-out items yet. Create one to get started!
         </div>
       ) : (
         <div className="space-y-2">
@@ -154,7 +153,7 @@ export default function TodoPanel({ profileId, title = 'StepOut - Todo List' }: 
             >
               <button
                 onClick={() => handleToggleStatus(todo)}
-                className="mt-1 text-primary hover:text-primary/80 flex-shrink-0"
+                className="mt-1 text-purple-600 hover:text-purple-800 flex-shrink-0"
               >
                 {todo.status === 'COMPLETED' ? (
                   <CheckCircle className="w-6 h-6" />
