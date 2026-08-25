@@ -5,6 +5,7 @@ import { useAuthStore, type Profile } from '@/lib/store';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import TabNavigation from '@/components/dashboard/TabNavigation';
 import TodoPanel from '@/components/dashboard/parent/TodoPanel';
+import StepOutPanel from '@/components/dashboard/parent/StepOutPanel';
 import HomeworkPanel from '@/components/dashboard/parent/HomeworkPanel';
 import EventTrackerPanel from '@/components/dashboard/parent/EventTrackerPanel';
 import ExamPlannerPanel from '@/components/dashboard/parent/ExamPlannerPanel';
@@ -12,7 +13,7 @@ import OlympiadPlannerPanel from '@/components/dashboard/parent/OlympiadPlannerP
 import { useRouter } from 'next/navigation';
 import { profilesAPI } from '@/lib/api';
 
-type TabType = 'todo' | 'homework' | 'events' | 'exams' | 'olympiad';
+type TabType = 'todo' | 'stepout' | 'homework' | 'events' | 'exams' | 'olympiad';
 
 export default function ParentDashboard({ params }: { params: { profileId: string } }) {
   const router = useRouter();
@@ -43,7 +44,8 @@ export default function ParentDashboard({ params }: { params: { profileId: strin
   };
 
   const tabs: { id: TabType; label: string }[] = [
-    { id: 'todo', label: 'StepOut' },
+    { id: 'todo', label: 'ToDo' },
+    { id: 'stepout', label: 'StepOut' },
     { id: 'homework', label: 'Homework' },
     { id: 'events', label: 'EventTrack' },
     { id: 'exams', label: 'ExamPlanner' },
@@ -57,8 +59,9 @@ export default function ParentDashboard({ params }: { params: { profileId: strin
       <TabNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="max-w-6xl mx-auto p-4">
-        {activeTab === 'todo' && <TodoPanel profileId={params.profileId} />}
-        {activeTab === 'homework' && <HomeworkPanel profileId={params.profileId} />}
+        {activeTab === 'todo' && <TodoPanel profileId={params.profileId} title="My To-Do List" />}
+        {activeTab === 'stepout' && <StepOutPanel profileId={params.profileId} />}
+        {activeTab === 'homework' && <HomeworkPanel profileId={params.profileId} allProfiles={allProfiles} />}
         {activeTab === 'events' && <EventTrackerPanel profileId={params.profileId} />}
         {activeTab === 'exams' && <ExamPlannerPanel profileId={params.profileId} />}
         {activeTab === 'olympiad' && <OlympiadPlannerPanel profileId={params.profileId} />}
