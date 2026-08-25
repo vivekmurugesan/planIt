@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { eventAPI } from '@/lib/api';
-import { Plus, Trash2, Calendar } from 'lucide-react';
+import { Plus, Trash2, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Event {
   id: string;
@@ -14,9 +14,16 @@ interface Event {
   endDate?: string;
 }
 
+interface DayEvent {
+  date: number;
+  events: Event[];
+}
+
 export default function EventTrackerPanel({ profileId }: { profileId: string }) {
   const [events, setEvents] = useState<Event[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [hoveredDate, setHoveredDate] = useState<number | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [newEvent, setNewEvent] = useState({
     title: '',
     description: '',
@@ -71,6 +78,24 @@ export default function EventTrackerPanel({ profileId }: { profileId: string }) 
       console.error('Failed to delete event:', error);
     }
   };
+
+  const getDaysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const getFirstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+
+  const getEventsForDate = (day: number): Event[] => {
+    return events.filter((event) => {
+      const eventDate = new Date(event.startDate);
+      return (
+        eventDate.getDate() === day &&
+        eventDate.getMonth() === currentMonth.getMonth() &&
+        eventDate.getFullYear() === currentMonth.getFullYear()
+      );
+    });
+  };
+
+  const monthName = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+  const daysInMonth = getDaysInMonth(currentMonth);
+  const firstDay = getFirstDayOfMonth(currentMonth);
 
   if (loading) return <div className="text-center py-8 text-gray-600">Loading events...</div>;
 
@@ -143,16 +168,88 @@ export default function EventTrackerPanel({ profileId }: { profileId: string }) 
         </div>
       )}
 
-      {events.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">No events scheduled</div>
-      ) : (
+      <div className="card">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold text-gray-800">{monthName}</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+              className="p-2 hover:bg-purple-100 rounded-lg transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <button
+              onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+              className="p-2 hover:bg-purple-100 rounded-lg transition-colors"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1 mb-4">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+            <div key={day} className="text-center font-semibold text-gray-600 text-sm py-2">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: firstDay }).map((_, i) => (
+            <div key={`empty-${i}`} className="aspect-square"></div>
+          ))}
+          {Array.from({ length: daysInMonth }).map((_, i) => {
+            const day = i + 1;
+            const dayEvents = getEventsForDate(day);
+            return (
+              <div
+                key={day}
+                className={`aspect-square border rounded-lg p-2 text-center relative cursor-pointer transition-all ${
+                  dayEvents.length > 0
+                    ? 'bg-purple-100 border-purple-400 font-semibold text-purple-900'
+                    : 'bg-white border-gray-200 text-gray-700'
+                } ${hoveredDate === day ? 'ring-2 ring-purple-400' : ''}`}
+                onMouseEnter={() => setHoveredDate(day)}
+                onMouseLeave={() => setHoveredDate(null)}
+              >
+                <div className="text-sm">{day}</div>
+                {dayEvents.length > 0 && (
+                  <div className="absolute inset-2 top-6 overflow-hidden">
+                    {hoveredDate === day && dayEvents.length > 0 && (
+                      <div className="absolute inset-0 bg-white border border-purple-400 rounded p-1 shadow-lg z-10">
+                        <div className="text-xs font-semibold text-gray-800 mb-1">
+                          {dayEvents.length} event{dayEvents.length > 1 ? 's' : ''}
+                        </div>
+                        <div className="text-xs text-gray-600 space-y-1 max-h-20 overflow-y-auto">
+                          {dayEvents.map((event) => (
+                            <div key={event.id} className="truncate">
+                              • {event.title}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {hoveredDate !== day && dayEvents.length > 0 && (
+                      <div className="text-xs text-purple-600">•</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {events.length > 0 && (
         <div className="space-y-2">
+          <h3 className="font-semibold text-gray-800">All Events</h3>
           {events.map((event) => (
             <div key={event.id} className="card">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="w-4 h-4 text-primary" />
+                    <Calendar className="w-4 h-4 text-purple-600" />
                     <p className="font-medium text-gray-800">{event.title}</p>
                   </div>
                   {event.description && <p className="text-sm text-gray-600">{event.description}</p>}

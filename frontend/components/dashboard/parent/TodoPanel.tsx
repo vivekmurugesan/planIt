@@ -73,7 +73,7 @@ export default function TodoPanel({ profileId }: TodoPanelProps) {
   };
 
   const priorityColor = {
-    LOW: 'text-green-600 bg-green-50',
+    LOW: 'text-purple-600 bg-purple-50',
     MEDIUM: 'text-yellow-600 bg-yellow-50',
     HIGH: 'text-red-600 bg-red-50',
   };
