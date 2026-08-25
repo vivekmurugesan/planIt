@@ -9,7 +9,7 @@ interface CreateProfileModalProps {
   onSuccess: () => void;
 }
 
-const AVATARS = ['👦', '👧', '👨', '👩', '👴', '👵', '🧑', '👱', '🧔', '👨‍🦱', '👩‍🦱', '🧑‍🦰'];
+const AVATARS = ['🦁', '🐶', '🦊', '🐼', '🦋', '🌟', '🎨', '🎭', '🚀', '🏆', '⚡', '🎪'];
 const COLORS = ['#9333ea', '#2196F3', '#FF9800', '#E91E63', '#00BCD4', '#10b981', '#f59e0b'];
 
 export default function CreateProfileModal({
