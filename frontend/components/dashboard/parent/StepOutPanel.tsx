@@ -18,19 +18,19 @@ interface StepOutPanelProps {
 }
 
 export default function StepOutPanel({ profileId }: StepOutPanelProps) {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [stepouts, setStepouts] = useState<StepOut[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [newTodo, setNewTodo] = useState({ title: '', description: '', priority: 'MEDIUM' });
+  const [newStepout, setNewStepout] = useState({ title: '', description: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTodos();
+    fetchStepouts();
   }, [profileId]);
 
-  const fetchTodos = async () => {
+  const fetchStepouts = async () => {
     try {
       const response = await stepoutAPI.getAll(profileId);
-      setTodos(response.data.stepout);
+      setStepouts(response.data.stepout);
     } catch (error) {
       console.error('Failed to fetch step-outs:', error);
     } finally {
@@ -38,45 +38,39 @@ export default function StepOutPanel({ profileId }: StepOutPanelProps) {
     }
   };
 
-  const handleAddTodo = async (e: React.FormEvent) => {
+  const handleAddStepout = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await stepoutAPI.create({
-        ...newTodo,
+        ...newStepout,
         profileId,
         recurring: false,
       });
-      setNewTodo({ title: '', description: '', priority: 'MEDIUM' });
+      setNewStepout({ title: '', description: '' });
       setShowForm(false);
-      fetchTodos();
+      fetchStepouts();
     } catch (error) {
       console.error('Failed to add step-out:', error);
     }
   };
 
-  const handleToggleStatus = async (todo: StepOut) => {
-    const newStatus = todo.status === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED';
+  const handleToggleStatus = async (stepout: StepOut) => {
+    const newStatus = stepout.status === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED';
     try {
-      await stepoutAPI.update(todo.id, { status: newStatus });
-      fetchTodos();
+      await stepoutAPI.update(stepout.id, { status: newStatus });
+      fetchStepouts();
     } catch (error) {
       console.error('Failed to update step-out:', error);
     }
   };
 
-  const handleDeleteTodo = async (id: string) => {
+  const handleDeleteStepout = async (id: string) => {
     try {
       await stepoutAPI.delete(id);
-      fetchTodos();
+      fetchStepouts();
     } catch (error) {
       console.error('Failed to delete step-out:', error);
     }
-  };
-
-  const priorityColor = {
-    LOW: 'text-purple-600 bg-purple-50',
-    MEDIUM: 'text-yellow-600 bg-yellow-50',
-    HIGH: 'text-red-600 bg-red-50',
   };
 
   if (loading) {
@@ -98,31 +92,22 @@ export default function StepOutPanel({ profileId }: StepOutPanelProps) {
 
       {showForm && (
         <div className="card">
-          <form onSubmit={handleAddTodo} className="space-y-3">
+          <form onSubmit={handleAddStepout} className="space-y-3">
             <input
               type="text"
               placeholder="Step out activity or task"
-              value={newTodo.title}
-              onChange={(e) => setNewTodo({ ...newTodo, title: e.target.value })}
+              value={newStepout.title}
+              onChange={(e) => setNewStepout({ ...newStepout, title: e.target.value })}
               className="input"
               required
             />
             <textarea
               placeholder="Description (optional)"
-              value={newTodo.description}
-              onChange={(e) => setNewTodo({ ...newTodo, description: e.target.value })}
+              value={newStepout.description}
+              onChange={(e) => setNewStepout({ ...newStepout, description: e.target.value })}
               className="input"
               rows={2}
             />
-            <select
-              value={newTodo.priority}
-              onChange={(e) => setNewTodo({ ...newTodo, priority: e.target.value })}
-              className="input"
-            >
-              <option value="LOW">Low Priority</option>
-              <option value="MEDIUM">Medium Priority</option>
-              <option value="HIGH">High Priority</option>
-            </select>
             <div className="flex gap-2">
               <button type="submit" className="flex-1 btn-primary">
                 Add Step Out
@@ -139,24 +124,24 @@ export default function StepOutPanel({ profileId }: StepOutPanelProps) {
         </div>
       )}
 
-      {todos.length === 0 ? (
+      {stepouts.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No step-out items yet. Create one to get started!
         </div>
       ) : (
         <div className="space-y-2">
-          {todos.map((todo) => (
+          {stepouts.map((stepout) => (
             <div
-              key={todo.id}
+              key={stepout.id}
               className={`card flex items-start gap-3 ${
-                todo.status === 'COMPLETED' ? 'bg-gray-50' : ''
+                stepout.status === 'COMPLETED' ? 'bg-gray-50' : ''
               }`}
             >
               <button
-                onClick={() => handleToggleStatus(todo)}
+                onClick={() => handleToggleStatus(stepout)}
                 className="mt-1 text-purple-600 hover:text-purple-800 flex-shrink-0"
               >
-                {todo.status === 'COMPLETED' ? (
+                {stepout.status === 'COMPLETED' ? (
                   <CheckCircle className="w-6 h-6" />
                 ) : (
                   <Circle className="w-6 h-6" />
@@ -165,24 +150,19 @@ export default function StepOutPanel({ profileId }: StepOutPanelProps) {
               <div className="flex-1">
                 <p
                   className={`font-medium ${
-                    todo.status === 'COMPLETED'
+                    stepout.status === 'COMPLETED'
                       ? 'line-through text-gray-500'
                       : 'text-gray-800'
                   }`}
                 >
-                  {todo.title}
+                  {stepout.title}
                 </p>
-                {todo.description && (
-                  <p className="text-sm text-gray-600 mt-1">{todo.description}</p>
+                {stepout.description && (
+                  <p className="text-sm text-gray-600 mt-1">{stepout.description}</p>
                 )}
-                <div className="flex gap-2 mt-2">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${priorityColor[todo.priority]}`}>
-                    {todo.priority}
-                  </span>
-                </div>
               </div>
               <button
-                onClick={() => handleDeleteTodo(todo.id)}
+                onClick={() => handleDeleteStepout(stepout.id)}
                 className="text-red-500 hover:text-red-700 flex-shrink-0 mt-1"
               >
                 <Trash2 className="w-5 h-5" />
