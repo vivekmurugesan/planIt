@@ -9,10 +9,11 @@ import ChildHomeworkPanel from '@/components/dashboard/child/ChildHomeworkPanel'
 import ChildExamPlannerPanel from '@/components/dashboard/child/ChildExamPlannerPanel';
 import ChildOlympiadPanelPanel from '@/components/dashboard/child/ChildOlympiadPanel';
 import ChildRevisionPanel from '@/components/dashboard/child/ChildRevisionPanel';
+import ChildFitnessPanel from '@/components/dashboard/child/ChildFitnessPanel';
 import { useRouter } from 'next/navigation';
 import { profilesAPI } from '@/lib/api';
 
-type ChildTabType = 'todo' | 'homework' | 'exams' | 'olympiad' | 'revision';
+type ChildTabType = 'todo' | 'homework' | 'exams' | 'olympiad' | 'revision' | 'fitness';
 
 export default function ChildDashboard({ params }: { params: { profileId: string } }) {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function ChildDashboard({ params }: { params: { profileId: string
   const tabs: { id: ChildTabType; label: string }[] = [
     { id: 'todo', label: 'ToDo' },
     { id: 'homework', label: 'Homework' },
+    { id: 'fitness', label: 'Fitness' },
     { id: 'exams', label: 'ExamPlanner' },
     { id: 'olympiad', label: 'OlympiadPlanner' },
     { id: 'revision', label: 'RevisionPlanner' },
@@ -59,6 +61,7 @@ export default function ChildDashboard({ params }: { params: { profileId: string
       <div className="max-w-6xl mx-auto p-4">
         {activeTab === 'todo' && <ChildTodoPanel profileId={params.profileId} />}
         {activeTab === 'homework' && <ChildHomeworkPanel profileId={params.profileId} />}
+        {activeTab === 'fitness' && <ChildFitnessPanel profileId={params.profileId} />}
         {activeTab === 'exams' && <ChildExamPlannerPanel profileId={params.profileId} />}
         {activeTab === 'olympiad' && <ChildOlympiadPanelPanel profileId={params.profileId} />}
         {activeTab === 'revision' && <ChildRevisionPanel profileId={params.profileId} />}

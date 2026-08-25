@@ -1,16 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { todoAPI } from '@/lib/api';
+import { stepoutAPI } from '@/lib/api';
 import { Plus, Trash2, CheckCircle, Circle } from 'lucide-react';
 
-interface Todo {
+interface StepOut {
   id: string;
   title: string;
   description?: string;
   status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH';
-  dueDate?: string;
+  recurring: boolean;
+  frequency?: string;
 }
 
 interface StepOutPanelProps {
@@ -29,10 +29,10 @@ export default function StepOutPanel({ profileId }: StepOutPanelProps) {
 
   const fetchTodos = async () => {
     try {
-      const response = await todoAPI.getAll(profileId);
-      setTodos(response.data.todos);
+      const response = await stepoutAPI.getAll(profileId);
+      setTodos(response.data.stepout);
     } catch (error) {
-      console.error('Failed to fetch todos:', error);
+      console.error('Failed to fetch step-outs:', error);
     } finally {
       setLoading(false);
     }
@@ -41,34 +41,35 @@ export default function StepOutPanel({ profileId }: StepOutPanelProps) {
   const handleAddTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await todoAPI.create({
+      await stepoutAPI.create({
         ...newTodo,
         profileId,
+        recurring: false,
       });
       setNewTodo({ title: '', description: '', priority: 'MEDIUM' });
       setShowForm(false);
       fetchTodos();
     } catch (error) {
-      console.error('Failed to add todo:', error);
+      console.error('Failed to add step-out:', error);
     }
   };
 
-  const handleToggleStatus = async (todo: Todo) => {
+  const handleToggleStatus = async (todo: StepOut) => {
     const newStatus = todo.status === 'COMPLETED' ? 'NOT_STARTED' : 'COMPLETED';
     try {
-      await todoAPI.update(todo.id, { status: newStatus });
+      await stepoutAPI.update(todo.id, { status: newStatus });
       fetchTodos();
     } catch (error) {
-      console.error('Failed to update todo:', error);
+      console.error('Failed to update step-out:', error);
     }
   };
 
   const handleDeleteTodo = async (id: string) => {
     try {
-      await todoAPI.delete(id);
+      await stepoutAPI.delete(id);
       fetchTodos();
     } catch (error) {
-      console.error('Failed to delete todo:', error);
+      console.error('Failed to delete step-out:', error);
     }
   };
 

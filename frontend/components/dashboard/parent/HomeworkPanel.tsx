@@ -44,7 +44,7 @@ export default function HomeworkPanel({ profileId, allProfiles }: HomeworkPanelP
 
   const fetchHomework = async () => {
     try {
-      const response = await homeworkAPI.getAll(profileId);
+      const response = await homeworkAPI.getAll();
       setHomework(response.data.homework);
     } catch (error) {
       console.error('Failed to fetch homework:', error);
