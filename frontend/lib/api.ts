@@ -80,4 +80,23 @@ export const homeworkAPI = {
   delete: (id: string) => api.delete(`/api/v1/homework/${id}`),
 };
 
+export const stepoutAPI = {
+  getAll: (profileId?: string) =>
+    api.get('/api/v1/stepout', { params: { profileId } }),
+  getOne: (id: string) => api.get(`/api/v1/stepout/${id}`),
+  create: (data: any) => api.post('/api/v1/stepout', data),
+  update: (id: string, data: any) => api.patch(`/api/v1/stepout/${id}`, data),
+  delete: (id: string) => api.delete(`/api/v1/stepout/${id}`),
+};
+
+export const fitnessAPI = {
+  getAll: (profileId?: string, date?: string) =>
+    api.get('/api/v1/fitness', { params: { profileId, date } }),
+  getOne: (id: string) => api.get(`/api/v1/fitness/${id}`),
+  create: (data: any) => api.post('/api/v1/fitness', data),
+  update: (id: string, data: any) => api.patch(`/api/v1/fitness/${id}`, data),
+  delete: (id: string) => api.delete(`/api/v1/fitness/${id}`),
+  generateDaily: (profileId: string) => api.post(`/api/v1/fitness/generate-daily/${profileId}`),
+};
+
 export default api;

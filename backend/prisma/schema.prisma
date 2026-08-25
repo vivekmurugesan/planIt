@@ -21,11 +21,13 @@ model User {
 
   profiles  Profile[]
   todos     Todo[]
+  stepouts  Stepout[]
   events    Event[]
   chores    Chore[]
   exams     ExamRevision[]
   olympiads OlympiadRevision[]
   homework  Homework[]
+  fitness   FitnessExercise[]
 }
 
 enum AccountType {
@@ -49,11 +51,13 @@ model Profile {
   updatedAt    DateTime @updatedAt
 
   todos        Todo[]
+  stepouts     Stepout[]
   events       Event[]
   chores       Chore[]
   exams        ExamRevision[]
   olympiads    OlympiadRevision[]
   homework     Homework[]
+  fitness      FitnessExercise[]
   revisions    RevisionItem[]
 
   @@unique([userId, displayName])
@@ -96,6 +100,52 @@ enum Priority {
   LOW
   MEDIUM
   HIGH
+}
+
+model Stepout {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  title     String
+  description String?
+  status    TodoStatus @default(NOT_STARTED)
+  recurring Boolean  @default(false)
+  frequency String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+model FitnessExercise {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  profileId String?
+  profile   Profile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  name      String
+  description String?
+  sets       Int      @default(3)
+  reps       Int      @default(10)
+  duration   Int?
+  difficulty String   @default("MEDIUM")
+  date       DateTime
+  completed  Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([profileId])
+  @@index([date])
 }
 
 model Event {

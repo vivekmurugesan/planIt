@@ -7,13 +7,14 @@ import TabNavigation from '@/components/dashboard/TabNavigation';
 import TodoPanel from '@/components/dashboard/parent/TodoPanel';
 import StepOutPanel from '@/components/dashboard/parent/StepOutPanel';
 import HomeworkPanel from '@/components/dashboard/parent/HomeworkPanel';
+import FitnessPanel from '@/components/dashboard/parent/FitnessPanel';
 import EventTrackerPanel from '@/components/dashboard/parent/EventTrackerPanel';
 import ExamPlannerPanel from '@/components/dashboard/parent/ExamPlannerPanel';
 import OlympiadPlannerPanel from '@/components/dashboard/parent/OlympiadPlannerPanel';
 import { useRouter } from 'next/navigation';
 import { profilesAPI } from '@/lib/api';
 
-type TabType = 'todo' | 'stepout' | 'homework' | 'events' | 'exams' | 'olympiad';
+type TabType = 'todo' | 'stepout' | 'homework' | 'fitness' | 'events' | 'exams' | 'olympiad';
 
 export default function ParentDashboard({ params }: { params: { profileId: string } }) {
   const router = useRouter();
@@ -47,6 +48,7 @@ export default function ParentDashboard({ params }: { params: { profileId: strin
     { id: 'todo', label: 'ToDo' },
     { id: 'stepout', label: 'StepOut' },
     { id: 'homework', label: 'Homework' },
+    { id: 'fitness', label: 'Fitness' },
     { id: 'events', label: 'EventTrack' },
     { id: 'exams', label: 'ExamPlanner' },
     { id: 'olympiad', label: 'OlympiadPlanner' },
@@ -62,6 +64,7 @@ export default function ParentDashboard({ params }: { params: { profileId: strin
         {activeTab === 'todo' && <TodoPanel profileId={params.profileId} title="My To-Do List" />}
         {activeTab === 'stepout' && <StepOutPanel profileId={params.profileId} />}
         {activeTab === 'homework' && <HomeworkPanel profileId={params.profileId} allProfiles={allProfiles} />}
+        {activeTab === 'fitness' && <FitnessPanel profileId={params.profileId} allProfiles={allProfiles} />}
         {activeTab === 'events' && <EventTrackerPanel profileId={params.profileId} />}
         {activeTab === 'exams' && <ExamPlannerPanel profileId={params.profileId} />}
         {activeTab === 'olympiad' && <OlympiadPlannerPanel profileId={params.profileId} />}
